@@ -10,12 +10,13 @@ The first product specification covers a minimal local collection of trees.
 
 ## Working language
 
-- **Problem tree**: A strict causal tree with exactly one parent for every non-central item, no cross-links, and no cycles.
-- **Central problem**: The focal problem around which the structure is organised. There is exactly one in the first version.
+- **Problem tree**: A strict causal tree with exactly one parent for every non-central item, no cross-links, and no cycles. Causes and consequences may form chains of any depth.
+- **Central problem**: The single focal problem around which the structure is organised. It remains fixed at the absolute spatial centre of the canvas and may be renamed, but it is never moved, attached, detached, reparented, or deleted as an ordinary item.
 - **Cause**: Something understood to contribute causally toward the central problem, directly or through another cause.
 - **Consequence**: Something understood to result from the central problem, directly or through another consequence.
 - **Unplaced thought**: A neutral text item on the canvas that has not yet been attached to the problem tree. It supports capturing an idea before deciding its causal role.
-- **Role**: The meaning of an attached item, derived from its path to the central problem rather than stored as an intrinsic type. Reattaching a branch across the central divide changes the role of the entire branch.
+- **Unplaced branch**: A disconnected causal structure created when an attached item with descendants is detached. Its internal parent relationships and item identities remain intact, but the branch has no cause or consequence role until it is reattached to the problem tree.
+- **Role**: The meaning of an attached item, derived from its path to the central problem rather than stored as an intrinsic type or inferred from its coordinates. Reattaching a branch across the central divide changes the role of the entire branch.
 - **Reparent**: Attach an item or branch to a different parent. Because the structure is a strict tree, completing a reparent replaces the previous parent relationship without a confirmation dialog.
 - **Magnetic attachment target**: A transient drop target shown near a valid parent while an item is dragged. Dropping there attaches or reparents the dragged branch.
 - **Edge insertion**: Placing an item between two already connected items, replacing one relationship with two while preserving a strict tree.
@@ -37,6 +38,8 @@ The first product specification covers a minimal local collection of trees.
 
 ## Interaction invariants
 
+- Moving an item never changes its causal meaning by itself; semantic changes require an explicit successful structural operation.
+- Attaching, detaching, reparenting, and edge insertion preserve item identity, text, descendants, and manual position unless the user separately changes them.
 - Ordinary item and branch deletion is immediate and undoable; it does not open a confirmation dialog.
 - Deleting an entire tree from the library requires confirmation.
 - Reparenting replaces the old parent relationship and remains undoable.
