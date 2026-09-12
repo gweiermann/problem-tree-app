@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Problem Tree — Rapid Capture Prototype</title>
+  <style>
+    :root{font-family:Inter,ui-rounded,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#29261f;background:#eee9dc;--ink:#29261f;--paper:#f4f0e5;--yellow:#ffe992;--orange:#ffc77a;--green:#cdebb9;--blue:#bdddea;--neutral:#f7f2e8;--purple:#7765d8}
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}button,input{font:inherit}
+    body{background:radial-gradient(circle at 25% 15%,rgba(255,255,255,.74),transparent 32%),linear-gradient(135deg,#eee9dc,#e7dfcf)}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.23;background-image:url("data:image/svg+xml,%3Csvg width='90' height='90' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E")}
+    .app{height:100%;display:grid;grid-template-rows:auto 1fr}
+    header{z-index:30;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(250,247,239,.88);border-bottom:1px solid rgba(55,47,35,.12);backdrop-filter:blur(16px)}
+    .mark{width:34px;height:34px;border-radius:12px;background:#2d2a24;color:#fff;display:grid;place-items:center;font-weight:900;transform:rotate(-3deg)}
+    .title{min-width:0}.title strong{display:block;font-size:14px}.title span{display:block;font-size:11px;color:#716a5f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .prototype-tag{font:700 10px ui-monospace,monospace;letter-spacing:.08em;color:#7c3aed;background:#ede9fe;border:1px solid #c4b5fd;padding:5px 8px;border-radius:999px}
+    .header-actions{margin-left:auto;display:flex;gap:8px}
+    .soft-btn,.icon-btn{border:1px solid rgba(45,42,36,.16);background:rgba(255,255,255,.8);color:var(--ink);border-radius:12px;padding:8px 12px;cursor:pointer;box-shadow:0 2px 8px rgba(46,38,27,.06)}
+    .soft-btn:hover,.icon-btn:hover{background:#fff}.soft-btn:disabled{opacity:.38;cursor:not-allowed}.icon-btn{width:38px;padding:8px}
+    main{min-height:0;position:relative}.workspace{height:100%;position:relative;overflow:hidden}
+    .canvas{position:absolute;inset:0;overflow:hidden;touch-action:none}
+    .canvas:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(55,48,36,.15) .75px,transparent .75px);background-size:24px 24px;mask-image:linear-gradient(to bottom,transparent,black 12%,black 88%,transparent)}
+    .role-label{position:absolute;top:18px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#827a6c;z-index:2}.role-label.cause{left:18px}.role-label.effect{right:18px}
+    .center-line{position:absolute;top:9%;bottom:10%;left:50%;border-left:1px dashed rgba(60,52,42,.13);pointer-events:none}
+    svg.edges{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:1}
+    .edge{stroke:#8f887c;stroke-width:2;fill:none;opacity:.58;stroke-linecap:round}
+    .edge.cause{stroke:#c98934}.edge.consequence{stroke:#568a67}.edge.unplaced{stroke:#8d8798;stroke-dasharray:5 6}
+    .edge-target{position:absolute;width:28px;height:28px;margin:-14px;border:2px dashed var(--purple);background:#f4f0ff;border-radius:50%;z-index:9;display:none;place-items:center;color:var(--purple);font-weight:900;box-shadow:0 0 0 6px rgba(119,101,216,.12)}
+    .structural-drag .edge-target{display:grid}
+    .node{position:absolute;z-index:10;width:174px;min-height:68px;padding:13px 14px;border:1px solid rgba(49,42,31,.15);border-radius:6px 9px 7px 10px;box-shadow:0 8px 18px rgba(58,47,31,.14),inset 0 1px rgba(255,255,255,.8);transform:translate(-50%,-50%) rotate(var(--tilt,0deg));user-select:none;touch-action:none;cursor:grab;transition:box-shadow .15s,filter .15s,outline .15s}
+    .node:active{cursor:grabbing}.node.cause{background:var(--orange)}.node.consequence{background:var(--green)}.node.unplaced{background:var(--neutral);border-style:dashed}.node.center{background:var(--yellow);width:210px;min-height:86px;cursor:text;border:2px solid rgba(79,64,23,.22);box-shadow:0 12px 30px rgba(58,47,31,.17)}
+    .node .kind{font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.55;margin-bottom:5px}.node .text{font-size:14px;line-height:1.22;font-weight:720}.node .branch-count{position:absolute;right:8px;bottom:6px;font-size:9px;opacity:.5}
+    .node.selected{outline:3px solid var(--purple);outline-offset:4px;z-index:16}.node.dragging{filter:saturate(1.05);box-shadow:0 18px 35px rgba(45,38,27,.24);z-index:20}.structural-drag .node.dragging{pointer-events:none}
+    .structural-drag .node.valid-target:not(.dragging){outline:2px dashed rgba(119,101,216,.62);outline-offset:6px}.structural-drag .node.drop-hover{outline:4px solid var(--purple);outline-offset:6px;transform:translate(-50%,-50%) scale(1.035)}
+    .link-handle{display:none;position:absolute;right:-13px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:#3d3848;color:#fff;place-items:center;font-size:13px;box-shadow:0 4px 10px rgba(0,0,0,.2);cursor:crosshair}
+    .variant-b .node:not(.center) .link-handle{display:grid}.variant-b .node{cursor:move}.variant-b .node .link-handle{cursor:crosshair}
+    .central-target{position:absolute;z-index:14;width:78px;height:48px;border:2px dashed var(--purple);border-radius:16px;background:rgba(246,243,255,.94);display:none;place-items:center;text-align:center;font-size:10px;font-weight:900;color:#5e50ad;box-shadow:0 8px 24px rgba(74,58,147,.18);pointer-events:auto}
+    .central-target.cause-target{transform:translate(-116px,-50%)}.central-target.effect-target{transform:translate(38px,-50%)}
+    .structural-drag .central-target,.variant-c.has-selection .central-target{display:grid}.variant-c.has-selection .edge-target{display:grid}.central-target.drop-hover{background:#ddd6fe;transform:translate(-116px,-50%) scale(1.1)}.central-target.effect-target.drop-hover{transform:translate(38px,-50%) scale(1.1)}
+    .detach-zone{position:absolute;inset:0;z-index:40;pointer-events:none;border:0 solid rgba(195,68,68,.0);transition:border .15s,background .15s}.show-detach .detach-zone{border-width:54px;border-color:rgba(202,72,72,.18);box-shadow:inset 0 0 0 2px rgba(179,55,55,.45)}
+    .show-detach .detach-zone:after{content:"Drop in border to detach";position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:6px 10px;border-radius:999px;background:#9f3737;color:#fff;font-size:10px;font-weight:800}
+    .show-detach.in-detach .detach-zone{border-color:rgba(202,72,72,.38);background:rgba(129,27,27,.07)}
+    .variant-copy{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:25;max-width:min(520px,66vw);padding:9px 12px;border-radius:13px;background:rgba(255,255,255,.78);border:1px solid rgba(45,42,36,.1);box-shadow:0 6px 20px rgba(50,42,30,.08);backdrop-filter:blur(10px);text-align:center;font-size:11px;color:#655e53}
+    .variant-copy strong{color:#302c26}.toast{position:absolute;z-index:50;left:50%;bottom:82px;transform:translateX(-50%) translateY(14px);opacity:0;background:#2f2c28;color:#fff;padding:9px 13px;border-radius:12px;font-size:11px;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%)}
+    .new-thought{position:absolute;z-index:24;right:18px;top:64px;border:0;border-radius:15px;padding:11px 14px;background:#2f2c28;color:#fff;font-weight:800;box-shadow:0 8px 20px rgba(40,34,25,.2);cursor:pointer}
+    .tool-rail{display:none}.variant-b .tool-rail{display:flex;position:absolute;left:16px;top:68px;z-index:25;width:170px;flex-direction:column;gap:8px;padding:12px;background:rgba(255,255,255,.86);border:1px solid rgba(45,42,36,.12);border-radius:16px;box-shadow:0 10px 30px rgba(49,40,29,.1)}
+    .tool-rail strong{font-size:12px}.tool-rail p{font-size:10px;line-height:1.35;color:#71695e;margin:0}.tool-rail .soft-btn{font-size:11px;text-align:left}
+    .capture-dock{display:none}.variant-c .capture-dock{display:flex;position:absolute;z-index:27;right:14px;top:14px;bottom:76px;width:min(300px,38vw);flex-direction:column;background:rgba(251,249,243,.95);border:1px solid rgba(45,42,36,.14);border-radius:20px;box-shadow:0 16px 38px rgba(49,40,29,.14);overflow:hidden}
+    .variant-c .canvas{right:min(310px,39vw)}.dock-head{padding:15px;border-bottom:1px solid rgba(45,42,36,.1)}.dock-head strong{display:block;font-size:13px}.dock-head span{font-size:10px;color:#777064}
+    .capture-form{display:flex;gap:6px;padding:10px}.capture-form input{min-width:0;flex:1;border:1px solid rgba(45,42,36,.18);border-radius:12px;padding:10px;background:#fff}.capture-form button{border:0;border-radius:12px;background:#2f2c28;color:#fff;width:38px}
+    .inbox{padding:4px 10px 12px;overflow:auto;display:flex;flex-direction:column;gap:7px}.inbox-item{border:1px dashed #aca497;background:#fffdf8;border-radius:12px;padding:10px;text-align:left;cursor:pointer}.inbox-item.selected{border:2px solid var(--purple);background:#f3f0ff}.inbox-item strong{font-size:11px;display:block}.inbox-item span{font-size:9px;color:#7c7468}
+    .selection-actions{margin-top:auto;padding:10px;border-top:1px solid rgba(45,42,36,.1);font-size:10px;color:#6e675c}.selection-actions strong{color:#302c26}.selection-actions button{width:100%;margin-top:7px}
+    .variant-c .node .tap-target{display:none;position:absolute;inset:-7px;border:2px dashed var(--purple);border-radius:12px;background:rgba(119,101,216,.08);place-items:center;font-size:10px;font-weight:900;color:#5746b0}.variant-c.has-selection .node:not(.selected):not(.center) .tap-target,.variant-c.has-selection .node.center .tap-target{display:grid}.variant-c.has-selection .node .text,.variant-c.has-selection .node .kind{opacity:.35}
+    .inspector{position:absolute;z-index:35;left:12px;bottom:70px;width:min(340px,calc(100vw - 24px));max-height:42vh;background:rgba(35,32,29,.94);color:#f4efe6;border-radius:16px;box-shadow:0 16px 36px rgba(0,0,0,.28);overflow:hidden;display:none}.inspector.open{display:block}.inspector-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-size:11px}.inspector pre{margin:0;padding:12px;font:10px/1.45 ui-monospace,SFMono-Regular,monospace;overflow:auto;max-height:34vh;white-space:pre-wrap}
+    .state-toggle{position:absolute;z-index:34;left:12px;bottom:18px;border:1px solid rgba(45,42,36,.14);background:rgba(255,255,255,.86);border-radius:12px;padding:8px 10px;font-size:10px;font-weight:800;cursor:pointer}
+    .switcher{position:fixed;z-index:80;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:7px;background:#211f1c;color:#fff;border-radius:18px;box-shadow:0 14px 36px rgba(0,0,0,.28)}
+    .switcher button{width:38px;height:34px;border:0;border-radius:12px;background:#3b3833;color:#fff;font-size:18px;cursor:pointer}.switcher .variant-label{min-width:170px;text-align:center;font-size:11px;font-weight:800}.switcher small{display:block;color:#bbb4a8;font-size:8px;margin-top:1px}
+    @media(max-width:720px){header{padding:9px 10px}.prototype-tag{display:none}.title span{max-width:42vw}.node{width:142px;min-height:60px;padding:10px}.node.center{width:166px;min-height:76px}.variant-copy{top:8px;max-width:82vw}.variant-b .tool-rail{left:8px;top:54px;width:136px}.capture-dock{border-radius:16px}.variant-c .capture-dock{right:7px;top:7px;bottom:68px;width:42vw}.variant-c .canvas{right:43vw}.switcher .variant-label{min-width:135px}.role-label{display:none}.new-thought{right:8px;top:52px}.show-detach .detach-zone{border-width:42px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="mark">↳</div>
+      <div class="title"><strong>Volunteer onboarding is confusing</strong><span>Rapid capture & reorganization study</span></div>
+      <span class="prototype-tag">THROWAWAY PROTOTYPE</span>
+      <div class="header-actions"><button class="icon-btn" id="undoBtn" title="Undo">↶</button><button class="soft-btn" id="resetBtn">Reset</button></div>
+    </header>
+    <main>
+      <section class="workspace" id="workspace">
+        <div class="canvas" id="canvas">
+          <div class="role-label cause">Causes</div><div class="role-label effect">Consequences</div><div class="center-line"></div>
+          <svg class="edges" id="edges"></svg>
+          <div id="edgeTargets"></div><div id="nodes"></div>
+          <div class="central-target cause-target" data-central-side="cause">Attach as<br>cause</div>
+          <div class="central-target effect-target" data-central-side="consequence">Attach as<br>consequence</div>
+        </div>
+        <div class="detach-zone"></div>
+        <div class="variant-copy" id="variantCopy"></div>
+        <button class="new-thought" id="newThought">＋ New thought</button>
+        <aside class="tool-rail">
+          <strong>Two different gestures</strong>
+          <p>Drag a card to arrange it. Drag its ● handle to change the tree.</p>
+          <button class="soft-btn" id="railNew">＋ Capture thought</button>
+          <button class="soft-btn" id="railHint">Show me how</button>
+        </aside>
+        <aside class="capture-dock">
+          <div class="dock-head"><strong>Thought inbox</strong><span>Type first. Decide where it belongs later.</span></div>
+          <form class="capture-form" id="captureForm"><input id="captureInput" placeholder="What else contributes?" autocomplete="off"><button aria-label="Add">↵</button></form>
+          <div class="inbox" id="inbox"></div>
+          <div class="selection-actions" id="selectionActions">Select a thought, then tap its destination on the canvas.</div>
+        </aside>
+        <button class="state-toggle" id="stateToggle">State ↗</button>
+        <aside class="inspector" id="inspector"><div class="inspector-head"><strong>Prototype state</strong><button class="icon-btn" id="closeInspector">×</button></div><pre id="stateView"></pre></aside>
+        <div class="toast" id="toast"></div>
+      </section>
+    </main>
+  </div>
+  <nav class="switcher" aria-label="Prototype variants">
+    <button id="prevVariant" aria-label="Previous variant">←</button>
+    <div class="variant-label" id="variantLabel"></div>
+    <button id="nextVariant" aria-label="Next variant">→</button>
+  </nav>
+  <script>
+  // THROWAWAY PROTOTYPE: Three rapid-capture interaction models, switchable via ?variant=.
+  (() => {
+    const variants = {
+      A:{name:'Magnetic canvas',copy:'<strong>Drag the thought itself.</strong> The whole branch follows; targets and the detachment border appear while moving.'},
+      B:{name:'Handle-first',copy:'<strong>Drag cards only to arrange.</strong> Use the ● handle when you intend to change structure.'},
+      C:{name:'Capture dock',copy:'<strong>Capture without interruption.</strong> Select an inbox or canvas thought, then tap where it belongs.'}
+    };
+    const initialNodes = [
+      {id:'center',text:'Volunteer onboarding is confusing',x:50,y:48,parent:null,side:'center',tilt:-1},
+      {id:'cause1',text:'Responsibilities are unclear',x:27,y:43,parent:'center',side:'cause',tilt:-1.5},
+      {id:'cause2',text:'No shared checklist exists',x:11,y:28,parent:'cause1',side:null,tilt:1},
+      {id:'effect1',text:'Tasks get duplicated',x:73,y:40,parent:'center',side:'consequence',tilt:1.2},
+      {id:'effect2',text:'People lose motivation',x:88,y:26,parent:'effect1',side:null,tilt:-.8},
+      {id:'loose1',text:'Meetings repeat old decisions',x:47,y:76,parent:null,side:null,tilt:1.5},
+      {id:'loose2',text:'Nobody knows who to ask',x:69,y:76,parent:null,side:null,tilt:-1}
+    ];
+    let nodes = structuredClone(initialNodes), history=[], drag=null, selected=null, lastAction='Prototype loaded';
+    const workspace=document.querySelector('#workspace'), canvas=document.querySelector('#canvas'), nodesEl=document.querySelector('#nodes'), edgesEl=document.querySelector('#edges'), edgeTargetsEl=document.querySelector('#edgeTargets');
+    const toastEl=document.querySelector('#toast'), stateView=document.querySelector('#stateView'), inspector=document.querySelector('#inspector');
+    let variant=(new URLSearchParams(location.search).get('variant')||'A').toUpperCase(); if(!variants[variant]) variant='A';
+    const byId=id=>nodes.find(n=>n.id===id);
+    const childrenOf=id=>nodes.filter(n=>n.parent===id);
+    const descendantsOf=id=>{const out=[];const walk=p=>childrenOf(p).forEach(c=>{out.push(c);walk(c.id)});walk(id);return out};
+    const rootRole=id=>{let n=byId(id),seen=new Set();while(n&&n.parent){if(seen.has(n.id))return'invalid';seen.add(n.id);if(n.parent==='center')return n.side||'invalid';n=byId(n.parent)}return n?.id==='center'?'center':'unplaced'};
+    const roleLabel=n=>n.id==='center'?'Central problem':rootRole(n.id)==='cause'?'Cause':rootRole(n.id)==='consequence'?'Consequence':(n.parent||childrenOf(n.id).length)?'Unplaced branch':'Unplaced thought';
+    const snapshot=()=>structuredClone(nodes);
+    function commit(before,label){if(JSON.stringify(before)===JSON.stringify(nodes))return;history.push(before);if(history.length>30)history.shift();lastAction=label;render();flash(label)}
+    function flash(msg){toastEl.textContent=msg;toastEl.classList.add('show');clearTimeout(flash.t);flash.t=setTimeout(()=>toastEl.classList.remove('show'),1300)}
+    function validParent(dragId,targetId){return dragId!==targetId && !descendantsOf(dragId).some(n=>n.id===targetId) && targetId!=='center'}
+    function attach(dragId,targetId,side){const n=byId(dragId);if(targetId==='center'){n.parent='center';n.side=side}else if(validParent(dragId,targetId)){n.parent=targetId;n.side=null}else return false;return true}
+    function detach(id){const n=byId(id);if(!n||!n.parent)return false;n.parent=null;n.side=null;return true}
+    function insertEdge(dragId,parentId,childId){if(dragId===parentId||dragId===childId||descendantsOf(dragId).some(n=>n.id===parentId||n.id===childId))return false;const d=byId(dragId),c=byId(childId);if(!d||!c||c.parent!==parentId)return false;const edgeSide=parentId==='center'?c.side:null;d.parent=parentId;d.side=edgeSide;c.parent=dragId;c.side=null;return true}
+    function render(){
+      workspace.className='workspace variant-'+variant.toLowerCase()+(selected?' has-selection':'')+(drag?.mode==='structural'?' structural-drag':'')+(drag&&byId(drag.id)?.parent?' show-detach':'')+(drag?.inDetach?' in-detach':'');
+      document.querySelector('#variantCopy').innerHTML=variants[variant].copy;
+      document.querySelector('#variantLabel').innerHTML=variant+' · '+variants[variant].name+'<small>← → switch variants</small>';
+      document.querySelector('#undoBtn').disabled=!history.length;
+      document.querySelector('#newThought').style.display=variant==='C'?'none':'block';
+      nodesEl.innerHTML='';
+      nodes.forEach(n=>{
+        const el=document.createElement('article');const role=rootRole(n.id);
+        el.className='node '+(n.id==='center'?'center':role)+(selected===n.id?' selected':'')+(drag?.id===n.id?' dragging':'');
+        if(drag?.mode==='structural'&&n.id!==drag.id&&!descendantsOf(drag.id).some(d=>d.id===n.id))el.classList.add('valid-target');
+        el.dataset.id=n.id;el.style.left=n.x+'%';el.style.top=n.y+'%';el.style.setProperty('--tilt',(n.tilt||0)+'deg');
+        el.innerHTML='<div class="kind">'+roleLabel(n)+'</div><div class="text">'+escapeHtml(n.text)+'</div>'+(descendantsOf(n.id).length?'<span class="branch-count">+'+descendantsOf(n.id).length+' branch</span>':'')+(n.id!=='center'?'<span class="link-handle" title="Move branch">●</span>':'')+'<span class="tap-target">Attach here</span>';
+        nodesEl.appendChild(el);
+      });
+      requestAnimationFrame(drawEdges);
+      renderInbox();renderState();
+      const center=byId('center');document.querySelectorAll('.central-target').forEach(el=>{el.style.left=center.x+'%';el.style.top=center.y+'%'});
+    }
+    function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function nodeCenter(id){const el=nodesEl.querySelector('[data-id="'+id+'"]');if(!el)return null;const r=el.getBoundingClientRect(),cr=canvas.getBoundingClientRect();return{x:r.left+r.width/2-cr.left,y:r.top+r.height/2-cr.top}}
+    function drawEdges(){
+      const cr=canvas.getBoundingClientRect();edgesEl.setAttribute('viewBox','0 0 '+cr.width+' '+cr.height);edgesEl.innerHTML='';edgeTargetsEl.innerHTML='';
+      nodes.filter(n=>n.parent).forEach(n=>{
+        const a=nodeCenter(n.parent),b=nodeCenter(n.id);if(!a||!b)return;const role=rootRole(n.id);
+        const path=document.createElementNS('http://www.w3.org/2000/svg','path');const dx=Math.abs(b.x-a.x)*.42;
+        path.setAttribute('d','M '+a.x+' '+a.y+' C '+(a.x+(b.x>a.x?dx:-dx))+' '+a.y+', '+(b.x-(b.x>a.x?dx:-dx))+' '+b.y+', '+b.x+' '+b.y);
+        path.setAttribute('class','edge '+role);edgesEl.appendChild(path);
+        const t=document.createElement('div');t.className='edge-target';t.dataset.parent=n.parent;t.dataset.child=n.id;t.style.left=((a.x+b.x)/2)+'px';t.style.top=((a.y+b.y)/2)+'px';t.textContent='＋';edgeTargetsEl.appendChild(t);
+      });
+    }
+    function renderInbox(){
+      const inbox=document.querySelector('#inbox');const loose=nodes.filter(n=>rootRole(n.id)==='unplaced'&&!n.parent);
+      inbox.innerHTML=loose.map(n=>'<button class="inbox-item '+(selected===n.id?'selected':'')+'" data-select="'+n.id+'"><strong>'+escapeHtml(n.text)+'</strong><span>'+(n.parent?'Part of an unplaced branch':'Unplaced')+'</span></button>').join('')||'<div class="selection-actions">Inbox empty — capture another thought.</div>';
+      const s=byId(selected);document.querySelector('#selectionActions').innerHTML=s?'<strong>Selected:</strong> '+escapeHtml(s.text)+'<button class="soft-btn" data-detach-selected '+(!s.parent?'disabled':'')+'>Detach selected branch</button>':'Select a thought, then tap its destination on the canvas.';
+    }
+    function renderState(){
+      const state={variant:variant+' — '+variants[variant].name,lastAction,nodes:nodes.map(n=>({id:n.id,text:n.text,parent:n.parent,role:rootRole(n.id),x:Math.round(n.x),y:Math.round(n.y)}))};
+      stateView.textContent=JSON.stringify(state,null,2);
+    }
+    function addThought(text){
+      const before=snapshot(),id='thought'+Date.now();nodes.push({id,text:text||'A new unplaced thought',x:variant==='C'?62:52,y:variant==='C'?84:68,parent:null,side:null,tilt:(Math.random()*3-1.5)});selected=variant==='C'?id:selected;commit(before,'Captured an unplaced thought');
+    }
+    function startDrag(e,id,mode){
+      if(id==='center'||(variant==='C'))return;
+      const n=byId(id),before=snapshot(),branch=(mode==='structural'||variant==='A')?[n,...descendantsOf(id)]:[n];
+      drag={id,mode,before,startX:e.clientX,startY:e.clientY,positions:Object.fromEntries(branch.map(x=>[x.id,{x:x.x,y:x.y}])),inDetach:false};
+      e.currentTarget.setPointerCapture?.(e.pointerId);render();
+    }
+    function moveDrag(e){
+      if(!drag)return;const cr=canvas.getBoundingClientRect(),dx=(e.clientX-drag.startX)/cr.width*100,dy=(e.clientY-drag.startY)/cr.height*100;
+      Object.entries(drag.positions).forEach(([id,p])=>{const n=byId(id);n.x=Math.max(3,Math.min(97,p.x+dx));n.y=Math.max(5,Math.min(94,p.y+dy))});
+      const border=54;drag.inDetach=!!byId(drag.id).parent&&(e.clientX-cr.left<border||cr.right-e.clientX<border||e.clientY-cr.top<border||cr.bottom-e.clientY<border);
+      render();highlightDrop(e.clientX,e.clientY);
+    }
+    function highlightDrop(x,y){document.querySelectorAll('.drop-hover').forEach(el=>el.classList.remove('drop-hover'));const el=document.elementFromPoint(x,y);el?.closest('.node,.central-target,.edge-target')?.classList.add('drop-hover')}
+    function endDrag(e){
+      if(!drag)return;const d=drag;drag=null;let label='Moved thought';const hit=document.elementFromPoint(e.clientX,e.clientY);const before=d.before;
+      if(d.mode==='structural'){
+        if(d.inDetach&&detach(d.id))label='Detached branch into unplaced space';
+        else if(hit?.closest('.central-target')){const side=hit.closest('.central-target').dataset.centralSide;if(attach(d.id,'center',side))label='Attached branch as '+side}
+        else if(hit?.closest('.edge-target')){const t=hit.closest('.edge-target');if(insertEdge(d.id,t.dataset.parent,t.dataset.child))label='Inserted branch into an edge'}
+        else if(hit?.closest('.node')){const target=hit.closest('.node').dataset.id;if(attach(d.id,target))label=rootRole(target)==='unplaced'?'Joined an unplaced branch':'Reparented branch'}
+      }
+      commit(before,label);render();
+    }
+    nodesEl.addEventListener('pointerdown',e=>{const card=e.target.closest('.node');if(!card)return;if(variant==='C'){selected=card.dataset.id;render();return}const viaHandle=!!e.target.closest('.link-handle');startDrag(e,card.dataset.id,variant==='A'||viaHandle?'structural':'spatial')});
+    window.addEventListener('pointermove',moveDrag);window.addEventListener('pointerup',endDrag);
+    nodesEl.addEventListener('click',e=>{
+      if(variant!=='C'||!selected)return;const target=e.target.closest('.node');if(!target||target.dataset.id===selected)return;const before=snapshot();if(target.dataset.id==='center'){flash('Choose cause or consequence beside the central problem');return}if(attach(selected,target.dataset.id)){commit(before,rootRole(target.dataset.id)==='unplaced'?'Joined unplaced thoughts':'Attached selected branch');selected=null;render()}
+    });
+    document.querySelectorAll('.central-target').forEach(el=>el.addEventListener('click',()=>{if(variant!=='C'||!selected)return;const before=snapshot();attach(selected,'center',el.dataset.centralSide);commit(before,'Attached selected branch as '+el.dataset.centralSide);selected=null;render()}));
+    edgeTargetsEl.addEventListener('click',e=>{if(variant!=='C'||!selected)return;const t=e.target.closest('.edge-target');if(!t)return;const before=snapshot();if(insertEdge(selected,t.dataset.parent,t.dataset.child)){commit(before,'Inserted selected branch into edge');selected=null;render()}});
+    document.querySelector('#inbox').addEventListener('click',e=>{const item=e.target.closest('[data-select]');if(item){selected=item.dataset.select;render()}});
+    document.querySelector('#selectionActions').addEventListener('click',e=>{if(!e.target.closest('[data-detach-selected]')||!selected)return;const before=snapshot();if(detach(selected))commit(before,'Detached selected branch')});
+    document.querySelector('#captureForm').addEventListener('submit',e=>{e.preventDefault();const input=document.querySelector('#captureInput');if(input.value.trim()){addThought(input.value.trim());input.value=''}});
+    document.querySelector('#newThought').onclick=()=>addThought(prompt('Capture a thought:')||'');
+    document.querySelector('#railNew').onclick=()=>addThought(prompt('Capture a thought:')||'');
+    document.querySelector('#railHint').onclick=()=>flash('Card = position. ● handle = structure.');
+    document.querySelector('#undoBtn').onclick=()=>{if(!history.length)return;nodes=history.pop();selected=null;lastAction='Undid the previous action';render();flash(lastAction)};
+    document.querySelector('#resetBtn').onclick=()=>{nodes=structuredClone(initialNodes);history=[];selected=null;lastAction='Reset the prototype';render();flash(lastAction)};
+    document.querySelector('#stateToggle').onclick=()=>inspector.classList.toggle('open');document.querySelector('#closeInspector').onclick=()=>inspector.classList.remove('open');
+    canvas.addEventListener('dblclick',e=>{if(e.target===canvas||e.target.closest('svg'))addThought('Double-click captured thought')});
+    function switchVariant(dir){const keys=Object.keys(variants),i=keys.indexOf(variant);variant=keys[(i+dir+keys.length)%keys.length];const u=new URL(location.href);u.searchParams.set('variant',variant);history.replaceState({},'',u);selected=null;lastAction='Switched interaction model';render()}
+    document.querySelector('#prevVariant').onclick=()=>switchVariant(-1);document.querySelector('#nextVariant').onclick=()=>switchVariant(1);
+    window.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)||document.activeElement?.isContentEditable)return;if(e.key==='ArrowLeft')switchVariant(-1);if(e.key==='ArrowRight')switchVariant(1);if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();document.querySelector('#undoBtn').click()}});
+    window.addEventListener('resize',()=>requestAnimationFrame(drawEdges));render();
+  })();
+  </script>
+</body>
+</html>
