@@ -53,4 +53,4 @@ The first product specification covers a minimal local collection of trees.
 - Deleting an entire tree from the library requires confirmation.
 - Reparenting replaces the old parent relationship and remains undoable.
 - Items move freely while dragged and never displace other items before release. After a drop, attached items never overlap: nearby items move aside without changing causal relationships.
-- Attached items are magnetically attracted toward horizontal cause and consequence chains. After a drop, the affected layout settles toward straight parent-child lines and carries the surrounding subtree with it while retaining limited room for manual adjustment.
+- Attached items are magnetically attracted toward horizontal cause and consequence chains. After a drop, the dropped item and its descendants settle visibly toward straight parent-child lines. Nearby siblings join only when proximity or collision requires rearrangement; distant branches remain fixed.
