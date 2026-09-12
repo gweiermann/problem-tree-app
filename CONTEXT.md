@@ -10,7 +10,7 @@ The first product specification covers a minimal local collection of trees.
 
 ## Working language
 
-- **Problem tree**: A strict causal tree with exactly one parent for every non-central item, no cross-links, and no cycles. Causes and consequences may form chains of any depth.
+- **Problem tree**: The connected causal component rooted at the central problem. It is a strict tree with exactly one parent for every non-central attached item, no cross-links, and no cycles. Causes and consequences may form chains of any depth.
 - **Central problem**: The single focal problem around which the structure is organised. It remains fixed at the absolute spatial centre of the canvas and may be renamed, but it is never moved, attached, detached, reparented, or deleted as an ordinary item.
 - **Cause**: Something understood to contribute causally toward the central problem, directly or through another cause.
 - **Consequence**: Something understood to result from the central problem, directly or through another consequence.
@@ -22,8 +22,11 @@ The first product specification covers a minimal local collection of trees.
 - **Magnetic attachment target**: A transient drop target shown near a valid parent while an item is dragged. Dropping on an attached item attaches or reparents the dragged branch into that item's role. Dropping on an unplaced item creates or extends an unplaced branch. The central problem exposes distinct cause and consequence targets.
 - **Detachment zone**: A thick, viewport-fixed border that becomes visible while an attached item or branch is dragged. Dropping into it deliberately detaches the branch; ordinary dragging elsewhere only changes layout.
 - **Edge insertion**: Atomically placing an item or branch between two already connected items. The old relationship is removed, the inserted item takes its former place, and the former child becomes an additional child of the inserted item; existing descendants and identities are preserved.
-- **Active tree**: The problem tree currently shown on the canvas.
-- **Tree library**: The local collection of trees. It supports creating, opening, renaming, duplicating, deleting, and sharing trees, without folders, search, accounts, or synchronisation.
+- **Tree document**: One saved library entry containing the central problem, its connected problem tree, zero or more standalone unplaced thoughts and unplaced branches, and their spatial arrangement.
+- **Active document**: The tree document currently open on the canvas.
+- **Canvas**: The finite spatial surface on which a tree document is arranged. Its central problem remains anchored while the viewport moves over it; its navigable extent reaches approximately half a viewport beyond the outermost item rather than continuing endlessly.
+- **Viewport**: The visible, freely pannable and zoomable window onto the canvas. Viewport-fixed controls such as the detachment zone move with the viewer rather than with canvas content.
+- **Tree library**: The local collection of tree documents. It supports creating, opening, renaming, duplicating, deleting, and sharing documents, without folders, search, accounts, or synchronisation.
 - **Snapshot link**: A shareable URL containing a frozen representation of a tree. It is not live collaboration.
 - **Imported snapshot**: A snapshot opened from a link. Saving it to the tree library requires confirmation. If its canonical data is byte-identical to an existing tree, the existing tree is opened instead of creating a duplicate.
 - **Authoring fluidity**: The degree to which capturing, changing, and reorganising ideas feels immediate and does not interrupt the user's train of thought.
