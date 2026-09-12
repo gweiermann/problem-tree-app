@@ -15,12 +15,12 @@ The first product specification covers a minimal local collection of trees.
 - **Cause**: Something understood to contribute causally toward the central problem, directly or through another cause.
 - **Consequence**: Something understood to result from the central problem, directly or through another consequence.
 - **Unplaced thought**: A neutral text item on the canvas that has not yet been attached to the problem tree. It supports capturing an idea before deciding its causal role.
-- **Unplaced branch**: A disconnected structure formed by detaching a branch or connecting unplaced thoughts. Its internal parent relationships and item identities remain intact, but the branch has no cause or consequence role until it is attached to the problem tree.
+- **Unplaced branch**: A disconnected structure formed by connecting unplaced thoughts. Its internal parent relationships and item identities remain intact, but the branch has no cause or consequence role until it is attached to the problem tree.
 - **Branch-side relationship**: The relationship connecting a direct child to the central problem. It identifies the branch as a cause branch or consequence branch; every descendant derives its role from this first relationship.
 - **Role**: The meaning of an attached item, derived from the branch-side relationship on its path to the central problem rather than stored as an intrinsic type or inferred from its coordinates. Reattaching a branch across the central divide preserves its structure while reinterpreting the causal direction and role of the entire branch.
 - **Reparent**: Attach an item or branch to a different parent. Because the structure is a strict tree, completing a reparent replaces the previous parent relationship without a confirmation dialog.
 - **Magnetic attachment target**: A transient drop target shown near a valid parent while an item is dragged. Dropping on an attached item attaches or reparents the dragged branch into that item's role. Dropping on an unplaced item creates or extends an unplaced branch. The central problem exposes distinct cause and consequence targets.
-- **Detachment zone**: A thick, viewport-fixed border that becomes visible while an attached item or branch is dragged. Dropping into it deliberately detaches the branch; ordinary dragging elsewhere only changes layout.
+- **Detachment zone**: A thick, viewport-fixed border that becomes visible while an attached item is structurally dragged. Dropping into it deliberately detaches that item and repairs the gap in its former branch; ordinary dragging elsewhere only changes layout.
 - **Edge insertion**: Atomically placing an item or branch between two already connected items. The old relationship is removed, the inserted item takes its former place, and the former child becomes an additional child of the inserted item; existing descendants and identities are preserved.
 - **Tree document**: One saved library entry containing the central problem, its connected problem tree, zero or more standalone unplaced thoughts and unplaced branches, and their spatial arrangement.
 - **Active document**: The tree document currently open on the canvas.
@@ -47,11 +47,11 @@ The first product specification covers a minimal local collection of trees.
 - Attaching a branch to an attached item gives the whole branch the target's role. Attaching it to an unplaced item makes the combined structure an unplaced branch with no global role.
 - Reattaching a branch across the central divide preserves its structure and atomically reinterprets the entire branch as the target's role, without confirmation and with undo available.
 - A structural drag is atomic. Until a valid attachment, reparenting, edge-insertion, or detachment drop succeeds, the prior relationships remain unchanged.
-- Dropping outside a valid structural target only changes the item's manual position. Dropping an attached branch into the visible detachment zone removes its connection to the problem tree, preserves its internal structure and current position, and makes it an unplaced branch.
-- Attaching, detaching, reparenting, and edge insertion preserve item identity, text, descendants, and manual position unless the user separately changes them.
-- Detaching a parented item inside an unplaced branch splits that item and its descendants into a second unplaced branch. The detachment zone is absent when the dragged item is already the root of an unplaced branch.
+- Dropping outside a valid structural target only changes the item's manual position. Dropping an attached item into the visible detachment zone removes only that item from its branch and makes it an unplaced thought. Each direct child is reattached to the detached item's former parent; when that parent is the central problem, promoted children inherit the detached item's branch-side relationship.
+- Attaching, reparenting, and edge insertion preserve item identity, text, descendants, and manual position unless the user separately changes them. Detachment preserves identity, text, and position but deliberately reparents direct children to repair the former branch.
+- Detaching a parented item inside an unplaced branch reconnects its direct children to its former parent and leaves the detached item as a separate unplaced thought. The detachment zone is absent when the dragged item is already the root of an unplaced branch.
 - Edge insertion removes the inserted branch from its former parent, preserves all existing descendants, and is rejected when it would introduce self-parenting or a cycle.
 - Ordinary item and branch deletion is immediate and undoable; it does not open a confirmation dialog.
 - Deleting an entire tree from the library requires confirmation.
 - Reparenting replaces the old parent relationship and remains undoable.
-- Items must not become hidden by overlap. The exact collision and displacement behavior remains a prototype decision.
+- Items never overlap. When moving or creating an item would cause overlap, nearby items move aside without changing any causal relationships.
