@@ -1,10 +1,10 @@
-# Magnetic tree and inbox prototype
+# Selection-first magnetic tree prototype
 
 Throwaway UI prototype for the decision in **Prototype rapid capture, attachment, and reorganization**.
 
 ## Question
 
-How should inbox-only capture, overlap-aware attachment, and constraint-assisted landscape layout work together?
+How should selection-based editing, unambiguous structural dragging, and constraint-assisted landscape layout work together?
 
 ## Run
 
@@ -14,23 +14,23 @@ python3 -m http.server 4173 --directory prototype/rapid-capture
 
 Open `http://localhost:4173/?variant=A`.
 
-All variants use the same direct-drag model and permanent thought inbox. They compare layout attraction strength:
+All variants use the same direct-drag and selected-node control-bar model. They compare layout attraction strength:
 
 - `A` — Magnetic tree: recommended gentle settling.
 - `B` — Loose magnets: a very light nudge and more manual placement.
 - `C` — Tidy magnets: stronger alignment without fully locking the layout.
 
-While held, a card moves freely and never pushes other cards. On release, the dropped card and its descendants animate toward a straighter horizontal chain. Nearby siblings join the animation only when proximity or collision requires them; distant branches remain untouched. A drop target activates when at least half the dragged card overlaps its card-sized magnetic region.
+Click a node to select it; click empty canvas to deselect it. The full-width bottom bar renames the selected node, adds a named child branch, or immediately removes the selected node. Removing a node repairs the chain by reconnecting its direct children to its former parent. The central problem can be renamed and can receive cause or consequence branches, but cannot be removed.
 
-Unattached thoughts exist only in the inbox. Drag an attached node into the inbox to detach it, or drag an inbox thought onto a magnetic target. Detaching repairs the old chain by reconnecting direct children to the detached node's former parent.
+Keyboard shortcuts mirror the bar: `R` focuses rename, `A` focuses the new-branch input, and `Delete` or `Backspace` removes the selected non-central node. Enter submits whichever input is focused.
 
-During a drag, inactive targets remain invisible. Once at least half the card overlaps an actionable target, a gray card-sized **Drop here** placeholder appears.
+While held, the real zoomed card moves freely; there is no separately sized drag ghost. It never pushes other cards. On release, the dropped card and its descendants animate toward a straighter horizontal chain. Nearby siblings join only when proximity or collision requires them; distant branches remain untouched.
 
-On desktop only, moving the mouse near a relationship reveals a quiet plus button close to its parent card. Clicking it creates and attaches a new thought at that exact relationship. Coarse pointers do not show these plus buttons.
+There are no hover plus buttons. Inactive structural targets remain invisible. Once at least half the card overlaps an actionable target, a labeled gray placeholder distinguishes **Insert between** from **Attach as branch**. Branch targets move away from occupied relationship gaps so they do not stack with edge-insertion targets.
 
-Every card, including the central problem, has a hover/focus rename button and also supports double-click rename.
+Touching the central problem with a dragged card has hard priority over crossing edges: it always creates a new root branch, with the card's center determining cause (left) or consequence (right). Dropping a node back onto its current parent/side is deliberately not actionable.
 
-Touch remains usable for convenient testing: drag cards and inbox thoughts directly, pan empty canvas space with one finger, and pinch with two fingers to zoom. A dedicated portrait-mobile interaction model is deferred to [Prototype portrait mobile problem-tree interactions](https://github.com/gweiermann/problem-tree-app/issues/16).
+When a target is actionable, the dragged card becomes translucent and shrinks slightly so the placeholder stays readable at any zoom. Touch remains usable for convenient testing: drag cards directly, pan empty canvas space with one finger, and pinch with two fingers to zoom. A dedicated portrait-mobile interaction model remains deferred to [Prototype portrait mobile problem-tree interactions](https://github.com/gweiermann/problem-tree-app/issues/16).
 
 Desktop dragging uses an armed threshold: pointer-down remains a click until the pointer moves five pixels. Native text selection is suppressed when the gesture is armed, and move/up/cancel events are scoped to the initiating pointer.
 
