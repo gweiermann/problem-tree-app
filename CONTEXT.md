@@ -28,6 +28,7 @@ The first product specification covers a minimal local collection of trees.
 - **Imported snapshot**: A snapshot opened from a link. Saving it to the tree library requires confirmation. If its canonical data is byte-identical to an existing tree, the existing tree is opened instead of creating a duplicate.
 - **Authoring fluidity**: The degree to which capturing, changing, and reorganising ideas feels immediate and does not interrupt the user's train of thought.
 - **Item text**: The sole content carried by a problem, cause, or consequence in the first version.
+- **Selection**: The set of zero, one, or many problem-tree items currently targeted by authoring commands. Selection has no causal meaning and never changes relationships by itself. The central problem may be selected but is excluded from ordinary or bulk deletion.
 - **Tidy tree**: An explicit command that arranges the tree legibly without changing its causal meaning.
 - **Tree name**: The library label derived from the central problem's text in the first version.
 
@@ -44,11 +45,12 @@ The first product specification covers a minimal local collection of trees.
 - Moving an item never changes its causal meaning by itself; semantic changes require an explicit successful structural operation.
 - Attaching a branch to an attached item gives the whole branch the target's role.
 - Reattaching a branch across the central divide preserves its structure and atomically reinterprets the entire branch as the target's role, without confirmation and with undo available.
+- When reattachment changes a branch between cause and consequence roles, its existing descendants rotate 180 degrees around the moved branch root before layout settling so the branch immediately grows in its new causal direction.
 - A structural drag is atomic. Until a valid attachment, reparenting, or edge-insertion succeeds, the prior relationships remain unchanged.
 - Dropping outside a valid structural target only changes the attached item's manual position.
 - Attaching, reparenting, and edge insertion preserve item identity, text, and descendants.
 - Edge insertion removes the inserted branch from its former parent, preserves all existing descendants, and is rejected when it would introduce self-parenting or a cycle.
-- Ordinary item deletion is immediate and undoable; it does not open a confirmation dialog. Deletion removes only the selected item: each direct child is promoted to the deleted item's former parent, and children promoted to the central problem inherit the deleted item's branch-side relationship. The central problem cannot be deleted.
+- Ordinary item deletion is immediate and undoable; it does not open a confirmation dialog. One or many selected items may be deleted atomically. Deletion removes only selected non-central items: each direct child is promoted to the nearest surviving former parent, and children promoted to the central problem inherit the removed branch's branch-side relationship. The central problem cannot be deleted.
 - Deleting an entire tree from the library requires confirmation.
 - Reparenting replaces the old parent relationship and remains undoable.
 - Items move freely while dragged and never displace other items before release. After a drop, attached items never overlap: nearby items move aside without changing causal relationships.
