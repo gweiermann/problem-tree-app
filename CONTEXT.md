@@ -4,7 +4,7 @@
 
 The product is a local-first editor for rapidly externalising and organising a problem tree. Its defining quality is authoring fluidity: using it should feel easier and more enjoyable than reaching for pen and paper.
 
-Desktop and tablet authoring are both first-class targets. Early prototypes may be validated on desktop first; physical tablet validation is deferred until a device is available. Local persistence, offline operation, and snapshot-link sharing support the core authoring experience. Agent-assisted editing is part of the product direction, but is lower priority than the human editing experience.
+Desktop and tablet authoring are both first-class targets. Early prototypes may be validated on desktop first; physical tablet validation is deferred until a device is available. A dedicated portrait-phone interaction model is outside the current iteration. Local persistence, offline operation, and snapshot-link sharing support the core authoring experience. Agent-assisted editing is part of the product direction, but is lower priority than the human editing experience.
 
 The first product specification covers a minimal local collection of trees.
 
@@ -19,7 +19,7 @@ The first product specification covers a minimal local collection of trees.
 - **Branch-side relationship**: The relationship connecting a direct child to the central problem. It identifies the branch as a cause branch or consequence branch; every descendant derives its role from this first relationship.
 - **Role**: The meaning of an attached item, derived from the branch-side relationship on its path to the central problem rather than stored as an intrinsic type or inferred from its coordinates. Reattaching a branch across the central divide preserves its structure while reinterpreting the causal direction and role of the entire branch.
 - **Reparent**: Attach an item or branch to a different parent. Because the structure is a strict tree, completing a reparent replaces the previous parent relationship without a confirmation dialog.
-- **Magnetic attachment target**: A card-sized relationship region represented by a plus. It activates when most of a dragged item overlaps it, so attachment depends on the item's position rather than cursor precision. Targets sit outward along the horizontal causal direction; the central problem exposes a cause target on its left and a consequence target on its right. A nearby target may also reveal its plus for direct creation at that relationship.
+- **Magnetic attachment target**: A card-sized relationship region that activates when most of a dragged item overlaps it, so attachment depends on the item's position rather than cursor precision. Inactive targets stay hidden during structural dragging; an actionable target appears as a card-sized placeholder. Targets sit outward along the horizontal causal direction; the central problem exposes a cause target on its left and a consequence target on its right. On fine-pointer devices, proximity may reveal a compact plus beside its related item for direct creation at that relationship.
 - **Edge insertion**: Atomically placing an item or branch between two already connected items. The old relationship is removed, the inserted item takes its former place, and the former child becomes an additional child of the inserted item; existing descendants and identities are preserved.
 - **Tree document**: One saved library entry containing the central problem, its connected problem tree and spatial arrangement, and zero or more inbox thoughts.
 - **Active document**: The tree document currently open on the canvas.
@@ -39,6 +39,7 @@ The first product specification covers a minimal local collection of trees.
 - Snapshot lineage, version comparison, version replacement, and preserved version history.
 - Folders, search, accounts, cloud synchronisation, and real-time collaboration.
 - Independently renaming a tree without changing the central problem.
+- Dedicated portrait-phone authoring, including vertical consequence/cause orientation and selection-based bottom actions.
 
 ## Interaction invariants
 
