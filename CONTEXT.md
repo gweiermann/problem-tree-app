@@ -19,6 +19,7 @@ The first product specification covers a minimal local collection of trees.
 - **Reparent**: Attach an item or branch to a different parent. Because the structure is a strict tree, completing a reparent replaces the previous parent relationship without a confirmation dialog.
 - **Magnetic attachment target**: A card-sized relationship region that activates when most of a dragged item overlaps it, so attachment depends on the item's position rather than cursor precision. Inactive targets stay hidden during structural dragging; an actionable target appears as a card-sized placeholder. Targets sit outward along the horizontal causal direction; the central problem exposes a cause target on its left and a consequence target on its right.
 - **Edge insertion**: Atomically placing an item or branch between two already connected items. The old relationship is removed, the inserted item takes its former place, and the former child becomes an additional child of the inserted item; existing descendants and identities are preserved.
+- **Parent insertion**: Create a new item between an attached item and its existing parent. The new item takes over the old parent relationship and the previously attached item becomes its child, preserving the branch-side relationship and every existing descendant.
 - **Tree document**: One saved library entry containing the central problem, its connected problem tree, and its spatial arrangement.
 - **Active document**: The tree document currently open on the canvas.
 - **Canvas**: The finite spatial surface on which a tree document is arranged. Its central problem remains anchored while the viewport moves over it; its navigable extent reaches approximately half a viewport beyond the outermost item rather than continuing endlessly.
@@ -50,6 +51,7 @@ The first product specification covers a minimal local collection of trees.
 - Dropping outside a valid structural target only changes the attached item's manual position.
 - Attaching, reparenting, and edge insertion preserve item identity, text, and descendants.
 - Edge insertion removes the inserted branch from its former parent, preserves all existing descendants, and is rejected when it would introduce self-parenting or a cycle.
+- Parent insertion preserves the selected item's identity, descendants, and derived role while introducing exactly one new item in its former relationship.
 - Ordinary item deletion is immediate and undoable; it does not open a confirmation dialog. One or many selected items may be deleted atomically. Deletion removes only selected non-central items: each direct child is promoted to the nearest surviving former parent, and children promoted to the central problem inherit the removed branch's branch-side relationship. The central problem cannot be deleted.
 - Deleting an entire tree from the library requires confirmation.
 - Reparenting replaces the old parent relationship and remains undoable.
