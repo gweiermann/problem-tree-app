@@ -26,19 +26,18 @@ The first product specification covers a minimal local collection of trees.
 - **Viewport**: The visible, freely pannable and zoomable window onto the canvas.
 - **Tree library**: The local collection of tree documents. It supports creating, opening, renaming, duplicating, deleting, and sharing documents, without folders, search, accounts, or synchronisation.
 - **Snapshot link**: A shareable URL containing a frozen representation of a tree. It is not live collaboration.
-- **Imported snapshot**: A snapshot opened from a link. Saving it to the tree library requires confirmation. If its canonical data is byte-identical to an existing tree, the existing tree is opened instead of creating a duplicate.
+- **Shared-tree mode**: The full-canvas state entered when a new snapshot link is opened. It clearly identifies the tree as shared with the user but not yet local. Choosing Edit or Save creates a tree-library entry; an identical snapshot skips this mode and opens the existing local tree instead.
 - **Authoring fluidity**: The degree to which capturing, changing, and reorganising ideas feels immediate and does not interrupt the user's train of thought.
 - **Item text**: The sole content carried by a problem, cause, or consequence in the first version.
 - **Selection**: The set of zero, one, or many problem-tree items currently targeted by authoring commands. Selection has no causal meaning and never changes relationships by itself. The central problem may be selected but is excluded from ordinary or bulk deletion.
 - **Tidy tree**: An explicit command that arranges the tree legibly without changing its causal meaning.
-- **Tree name**: The library label derived from the central problem's text in the first version.
+- **Tree name**: A user-editable library label. It initially defaults to the central problem's text but may be renamed independently without changing the problem tree.
 
 ## Explicitly deferred concepts
 
 - Freehand drawing, handwriting recognition, and stylus ink.
 - Snapshot lineage, version comparison, version replacement, and preserved version history.
 - Folders, search, accounts, cloud synchronisation, and real-time collaboration.
-- Independently renaming a tree without changing the central problem.
 - Dedicated portrait-phone authoring, including vertical consequence/cause orientation and selection-based bottom actions.
 
 ## Interaction invariants
