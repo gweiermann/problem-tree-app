@@ -14,21 +14,23 @@ python3 -m http.server 4173 --directory prototype/rapid-capture
 
 Open `http://localhost:4173/?variant=A`.
 
-All variants use the same direct-drag and selected-node control-bar model. They compare layout attraction strength:
+All variants use the same direct-drag, selection-first editing model. They compare layout attraction strength:
 
 - `A` — Magnetic tree: recommended gentle settling.
 - `B` — Loose magnets: a very light nudge and more manual placement.
 - `C` — Tidy magnets: stronger alignment without fully locking the layout.
 
-Click a node to select it; click empty canvas to deselect it. Dragging on empty desktop canvas draws a selection rectangle. The explicit **Select area** tool enables the same rectangle with touch instead of panning, then returns to normal navigation after selection. Any number of nodes can be selected and removed atomically. Removing nodes repairs each affected chain by reconnecting direct children to the nearest surviving parent. The central problem can be selected and renamed but cannot be removed.
+Click a node to select it; click empty canvas to deselect it. On tablet and desktop, the selected node exposes local **Add child**, **Add parent**, and **Rename** actions. The central problem instead offers explicit **Add cause** and **Add consequence** actions. Double-clicking a node, pressing `R`, or pressing Enter starts an inline rename.
 
-The full-width bottom bar uses one contextual text input. Rename is its default mode. **Add branch**, **＋ Cause**, or **＋ Consequence** switches that same input into creation mode; button confirmation or Enter adds the named branch. Root cause and consequence actions remain available regardless of selection. Creating a branch preserves the current selection and stays in creation mode for rapid repeated entry.
+The full-width bottom action bar is smartphone-only. It is visually blank when nothing is selected and mirrors the same contextual actions when a node is selected. Creating a child or parent preserves the current selection, so repeated branch creation stays anchored to the original node while the new thought is named inline.
 
-Keyboard shortcuts mirror the bar: `R` returns to rename mode, `A` opens add-branch mode, and `Delete` or `Backspace` removes all selected non-central nodes. Enter confirms the current input mode.
+Keyboard shortcuts mirror the actions: `A` adds a child, `P` inserts a parent, `C`/`E` add a cause/consequence when the center is selected, and `Delete` or `Backspace` removes all selected non-central nodes. During inline editing, Enter confirms and Escape cancels. Outside editing, `Home` selects the central problem, Left/Right move toward or away from the center according to the branch direction, and Up/Down move between siblings. `[` and `]` switch magnetic-strength variants.
+
+Dragging on empty desktop canvas draws a selection rectangle. The explicit **Select area** tool enables the same rectangle with touch instead of panning, then returns to normal navigation after selection. Any number of nodes can be selected and removed atomically. Removing nodes repairs each affected chain by reconnecting direct children to the nearest surviving parent. The central problem can be selected and renamed but cannot be removed.
 
 While held, the real zoomed card moves freely; there is no separately sized drag ghost. It never pushes other cards. On release, the dropped card and its descendants animate toward a straighter horizontal chain. Nearby siblings join only when proximity or collision requires them; distant branches remain untouched.
 
-There are no hover plus buttons. Inactive structural targets remain invisible. Once at least half the card overlaps an actionable target, a labeled gray placeholder distinguishes **Insert between** from **Attach as branch**. Branch targets move away from occupied relationship gaps so they do not stack with edge-insertion targets.
+There are no hover plus buttons. Inactive structural targets remain invisible. Once at least half the card overlaps an actionable target, one persistent labeled gray placeholder distinguishes **Insert between** from **Attach as branch**. It animates only when the structural candidate changes, so ordinary pointer movement over the same target remains visually steady. Branch targets move away from occupied relationship gaps so they do not stack with edge-insertion targets.
 
 Touching the central problem with a dragged card has hard priority over crossing edges: it always creates a new root branch, with the card's center determining cause (left) or consequence (right). Dropping a node back onto its current parent/side is deliberately not actionable.
 
