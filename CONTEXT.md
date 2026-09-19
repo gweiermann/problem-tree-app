@@ -24,13 +24,12 @@ The first product specification covers a minimal local collection of trees.
 - **Active document**: The tree document currently open on the canvas.
 - **Canvas**: The finite spatial surface on which a tree document is arranged. Its central problem remains anchored while the viewport moves over it; its navigable extent reaches approximately half a viewport beyond the outermost item rather than continuing endlessly.
 - **Viewport**: The visible, freely pannable and zoomable window onto the canvas.
-- **Tree library**: The local collection of tree documents. It supports creating, opening, renaming, duplicating, deleting, and sharing documents, without folders, search, accounts, or synchronisation.
+- **Tree library**: The local collection of tree documents. It supports creating, opening, renaming, reordering, duplicating, deleting, and sharing documents, without folders, search, accounts, or synchronisation. On desktop it opens as a collapsible drawer beside the canvas; on tablet as a bottom sheet.
 - **Snapshot link**: A shareable URL containing a frozen representation of a tree. It is not live collaboration.
-- **Shared-tree mode**: The full-canvas state entered when a new snapshot link is opened. It clearly identifies the tree as shared with the user but not yet local. Choosing Edit or Save creates a tree-library entry; an identical snapshot skips this mode and opens the existing local tree instead.
+- **Shared-tree mode**: The full-canvas state entered when a new snapshot link is opened. A persistent “Shared with you” badge identifies the tree as shared but not yet local. Choosing Edit or Save creates a tree-library entry: Edit continues on the canvas with the library closed; Save opens the library and highlights the entry. An identical snapshot skips this mode and opens the existing local tree with the library open and the entry highlighted.
 - **Authoring fluidity**: The degree to which capturing, changing, and reorganising ideas feels immediate and does not interrupt the user's train of thought.
 - **Item text**: The sole content carried by a problem, cause, or consequence in the first version.
 - **Selection**: The set of zero, one, or many problem-tree items currently targeted by authoring commands. Selection has no causal meaning and never changes relationships by itself. The central problem may be selected but is excluded from ordinary or bulk deletion.
-- **Tidy tree**: An explicit command that arranges the tree legibly without changing its causal meaning.
 - **Tree name**: A user-editable library label. It initially defaults to the central problem's text but may be renamed independently without changing the problem tree.
 
 ## Explicitly deferred concepts
@@ -53,6 +52,7 @@ The first product specification covers a minimal local collection of trees.
 - Parent insertion preserves the selected item's identity, descendants, and derived role while introducing exactly one new item in its former relationship.
 - Ordinary item deletion is immediate and undoable; it does not open a confirmation dialog. One or many selected items may be deleted atomically. Deletion removes only selected non-central items: each direct child is promoted to the nearest surviving former parent, and children promoted to the central problem inherit the removed branch's branch-side relationship. The central problem cannot be deleted.
 - Deleting an entire tree from the library requires confirmation.
+- Tree names can be renamed independently of the central problem. A dragged library row follows the pointer, neighboring rows visibly shift into place, and the row settles into its new position on release.
 - Reparenting replaces the old parent relationship and remains undoable.
 - Items move freely while dragged and never displace other items before release. After a drop, attached items never overlap: nearby items move aside without changing causal relationships.
 - Attached items are magnetically attracted toward horizontal cause and consequence chains. After a drop, the dropped item and its descendants settle visibly toward straight parent-child lines. Nearby siblings join only when proximity or collision requires rearrangement; distant branches remain fixed.
